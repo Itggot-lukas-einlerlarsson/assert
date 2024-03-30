@@ -1,5 +1,6 @@
 mod asset_manager;
 use asset_manager::AssetManager;
+use std::collections::HashMap;
 
 // tokio let's us use "async" on our main function
 #[tokio::main]
