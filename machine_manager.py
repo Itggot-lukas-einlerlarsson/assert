@@ -1,6 +1,7 @@
 import nmap3
 import logging
-import graphviz
+# import graphviz
+from graphviz_tool import tree_to_graphviz
 import ipaddress
 import netifaces
 
@@ -32,36 +33,28 @@ class MachineManager():
         self.logger = logging.getLogger(__name__)
         self.logger.info("starting the AssetManager")
         self.nmapper = nmap3.Nmap()
-        self.current_machine_information = None
         self.scanned_addresses = {}
 
-    def get_current_machine_information():
-        
-
-    def scratch_scan_all_hosts(self, subnet: str):
+    def scratch_scan_subnet(self, subnet: str):
         net = ipaddress.ip_network(subnet)
         print(dir(net))
         self.logger.info(f"scratch scanning network {subnet}, length: {len(list(net))}")
         for ip in net:
             self.logger.info(f"scanning ipaddress: {ip}")
-            print(self.nmapper.nmap_version_detection(ip))
+            self.scanned_addresses[ip] = self.nmapper.nmap_version_detection(ip)
 
-    def deep_scan_all_hosts(self, subnet: str):
+    def deep_scan_subnet(self, subnet: str):
         net = ipaddress.ip_network(subnet)
         self.logger.info(f"deep scanning network {subnet}, length: {list(len(net))}")
         for ip in net:
             self.logger.info(f"scanning ipaddress: {ip}")
-            self.nmapper.scan_top_ports(ip)
-
-    def deep_scan_host(ip_address: str, ports: str = "all hosts"):
-        self.logger.info(f"thourough scanning of host:{subnet}, ports:")
-        a = ipaddress.ip_network(subnet)
-        self.logger.info(f"scanning ipaddress: {ip}")
-        self.nmapper.scan_top_ports(ip)
+            self.scanned_addresses[ip] = self.nmapper.scan_top_ports(ip)
 
     def create_report():
-        pass
-
+        node_list = []
+        for key, value in self.scanned_addresses.items():
+            node_list.append([key, value])
+        tree_to_graphviz(node_list, "test.dot")
 
 def main():
     test = AssetManager()
