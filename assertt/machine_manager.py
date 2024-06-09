@@ -1,25 +1,10 @@
 import nmap3
 import logging
-# import graphviz
-from graphviz_tool import tree_to_graphviz
+import graphviz
 import ipaddress
 import netifaces
-
-#a = ipaddress.ip_network('192.0.2.0/24')
-#print(a)
-
-class Machine():
-    """
-        Information expert regarding a machine in a network
-    """
-
-    def __init__(self):
-        self.ipv4_address: ipaddress.IPv4Address = None
-        self.network_gateway: Machine = None
-
-    def __str__(self):
-        return f"ipv4 address: {self.ipv4_address}, networkgateway: {self.network_gateway}"
-
+from assertt import get_logger
+from assertt.machine import Machine
 
 class MachineManager():
     """
@@ -29,8 +14,7 @@ class MachineManager():
     """
 
     def __init__(self):
-        logging.basicConfig(format = "[%(asctime)s] %(levelname)s:%(lineno)d -- %(message)s", level=logging.DEBUG)
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self.logger.info("starting the AssetManager")
         self.nmapper = nmap3.Nmap()
         self.scanned_addresses = {}
@@ -50,15 +34,9 @@ class MachineManager():
             self.logger.info(f"scanning ipaddress: {ip}")
             self.scanned_addresses[ip] = self.nmapper.scan_top_ports(ip)
 
-    def create_report():
+    def create_report(self):
         node_list = []
         for key, value in self.scanned_addresses.items():
+            self.logger.info(f"key: {key}, value: {value}")
             node_list.append([key, value])
-        tree_to_graphviz(node_list, "test.dot")
-
-def main():
-    test = AssetManager()
-    test.scratch_scan_all_hosts(subnet="192.168.0.0/24")
-
-if __name__ == "__main__":
-    main()
+        # tree_to_graphviz(node_list, "test.dot")s
